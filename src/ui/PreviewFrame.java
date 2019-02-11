@@ -20,9 +20,13 @@ public class PreviewFrame extends JDialog {
     JComboBox<String> comboBox = new JComboBox<>();
 
     public List<Skill> getSkills() {
-        if (isSave)
-            return _skills;
-        else return skills;
+        if (isSave) {
+            List<Skill> t = _skills;
+            _skills = skills;
+            skills = t;
+            isSave = false;
+        }
+        return skills;
     }
 
     public void setSkills(@NotNull List<Skill> skills) {
@@ -36,6 +40,7 @@ public class PreviewFrame extends JDialog {
             comboBox.setSelectedIndex(0);
 
         _skills.clear();
+        _skills.addAll(skills);
         Collections.copy(_skills, skills);
     }
 
@@ -86,8 +91,15 @@ public class PreviewFrame extends JDialog {
                     JOptionPane.showMessageDialog(PreviewFrame.this, "未选中任何项目", "错误", JOptionPane.OK_OPTION);
                     return;
                 }
+                String oldname=_skills.get(comboBox.getSelectedIndex()).getSkillName();
                 skillFrame.setSkill(_skills.get(comboBox.getSelectedIndex()));
                 skillFrame.setVisible(true);
+                if(!oldname.equals(skillFrame.getSkill().getSkillName())){
+                    int index=comboBox.getSelectedIndex();
+                    comboBox.removeItemAt(index);
+                    comboBox.insertItemAt(skillFrame.getSkill().getSkillName(),index);
+                    comboBox.setSelectedIndex(index);
+                }
             }
         });
         bt2.addActionListener(new ActionListener() {
